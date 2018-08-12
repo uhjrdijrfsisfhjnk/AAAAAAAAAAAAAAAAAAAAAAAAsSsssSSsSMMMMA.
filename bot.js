@@ -161,7 +161,8 @@ client.on('message', function(message) {
     const member = message.member;
     const mess = message.content.toLowerCase();
     const args = message.content.split(' ').slice(1).join(' ');
-    let prefix = "Aa",
+    let prefix = "Aa";
+
     if (mess.startsWith(prefix + 'play')) {
         if (!message.member.voiceChannel) return message.channel.send("I can't find you in Any voice Channel!");
         if (args.length == 0) {
