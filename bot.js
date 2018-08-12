@@ -144,6 +144,14 @@ client.on('message', message => {
 client.on('message', async msg => { 
 	if (msg.author.bot) return undefined;
     if (!msg.content.startsWith(prefix)) return undefined;
+    var download = function(uri, filename, callback) {
+        request.head(uri, function(err, res, body) {
+            console.log('content-type:', res.headers['content-type']);
+            console.log('content-length:', res.headers['content-length']);
+    
+            request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
+        });
+    };
     
     const args = msg.content.split(' ');
 	const searchString = args.slice(1).join(' ');
@@ -176,63 +184,61 @@ client.on('message', async msg => {
 			return msg.channel.sendMessage("I don't have enough permissions to insert a URLs!")
 		}
 
-		if (url.match(/^https?:\/\/(www.youtube.com|youtube.com)\/playlist(.*)$/)) {
 
-			const playlist = await youtube.getPlaylist(url);
-            const videos = await playlist.getVideos();
-            
 
-			for (const video of Object.values(videos)) {
-                
-                const video2 = await youtube.getVideoByID(video.id); 
-                await handleVideo(video2, msg, voiceChannel, true); 
+			if (!message.member.voiceChannel) return message.channel.send(':no_entry: || **__يجب ان تكون في روم صوتي__**');
+            // if user is not insert the URL or song title
+            if (args.length == 0) {
+                let play_info = new Discord.RichEmbed()
+                    .setAuthor(client.user.username, client.user.avatarURL)
+                    .setFooter('طلب بواسطة: ' + message.author.tag)
+                    .setDescription('**قم بإدراج رابط او اسم الأغنيه**')
+                message.channel.sendEmbed(play_info)
+                return;
             }
-			return msg.channel.send(`**${playlist.title}**, Just added to the queue!`);
-		} else {
-
-			try {
-
-                var video = await youtube.getVideo(url);
-                
-			} catch (error) {
-				try {
-
-					var videos = await youtube.searchVideos(searchString, 5);
-					let index = 0;
-                    const embed1 = new Discord.RichEmbed()
-                    .setTitle(":mag_right:  YouTube Search Results :")
-                    .setDescription(`
-                    ${videos.map(video2 => `${++index}. **${video2.title}**`).join('\n')}`)
-                    
-					.setColor("#414141")
-					msg.channel.sendEmbed(embed1).then(message =>{message.delete(20000)})
-					
-/////////////////					
-					try {
-
-						var response = await msg.channel.awaitMessages(msg2 => msg2.content > 0 && msg2.content < 11, {
-							maxMatches: 1,
-							time: 15000,
-							errors: ['time']
-						});
-					} catch (err) {
-						console.error(err);
-						return msg.channel.send('No one respone a number!!');
-                    }
-                    
-					const videoIndex = parseInt(response.first().content);
-                    var video = await youtube.getVideoByID(videos[videoIndex - 1].id);
-                    
-				} catch (err) {
-
-					console.error(err);
-					return msg.channel.send("I didn't find any results!");
-				}
-			}
-
-            return handleVideo(video, msg, voiceChannel);
-            
-        }
+            if (queue.length > 0 || isPlaying) {
+                getID(args, function(id) {
+                    add_to_queue(id);
+                    fetchVideoInfo(id, function(err, videoInfo) {
+                        if (err) throw new Error(err);
+                        let play_info = new Discord.RichEmbed()
+                            .setAuthor(client.user.username, client.user.avatarURL)
+                            .addField('تمت إضافةالاغنيه بقائمة الإنتظار', `**
+                              ${videoInfo.title}
+                              **`)
+                            .setColor("#a637f9")
+                            .setFooter('|| ' + message.author.tag)
+                            .setThumbnail(videoInfo.thumbnailUrl)
+                        message.channel.sendEmbed(play_info);
+                        queueNames.push(videoInfo.title);
+                        now_playing.push(videoInfo.title);
+    
+                    });
+                });
+            }
+            else {
+    
+                isPlaying = true;
+                getID(args, function(id) {
+                    queue.push('placeholder');
+                    playMusic(id, message);
+                    fetchVideoInfo(id, function(err, videoInfo) {
+                        if (err) throw new Error(err);
+                        let play_info = new Discord.RichEmbed()
+                            .setAuthor(client.user.username, client.user.avatarURL)
+                            .addField('__**تم التشغيل ✅**__', `**${videoInfo.title}
+                                  **`)
+                            .setColor("RANDOM")
+                            .addField(`بواسطه`, message.author.username)
+                            .setThumbnail(videoInfo.thumbnailUrl)
+    
+                        // .setDescription('?')
+                        message.channel.sendEmbed(play_info)
+                        message.channel.send(`
+                                **${videoInfo.title}** تم تشغيل `)
+                    });
+                });
+            }
         
 	} else if (command === `skip`) {
 
