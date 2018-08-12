@@ -44,11 +44,14 @@ var download = function(uri, filename, callback) {
 };
 
 client.on('message', function(message) {
+    const prefix = "Aa";
     const member = message.member;
     const mess = message.content.toLowerCase();
     const args = message.content.split(' ').slice(1).join(' ');
+	let command = message.content.toLowerCase().split(" ")[0];
+	command = command.slice(prefix.length)
 
-    if (mess.startsWith(prefix + 'play')) {
+    if (command === `play`) {
         if (!message.member.voiceChannel) return message.channel.send(':no_entry: || **__يجب ان تكون في روم صوتي__**');
         // if user is not insert the URL or song title
         if (args.length == 0) {
