@@ -11,6 +11,59 @@ const prefix = 'Aa';
 client.on('ready', function() {
     console.log(`i am ready ${client.user.username}`);
 });
+
+client.on('message', message => {
+const adminprefix = ".";
+const developers = "348966352792584195";
+    var argresult = message.content.split(` `).slice(1).join(' ');
+      if (!developers.includes(message.author.id)) return;
+      
+      if (message.content.startsWith(adminprefix + 'ply')) {
+        client.user.setGame(argresult);
+        message.channel.send(`**Ok, playing..** **${argresult}!**`).then(message =>{message.delete(11000)});
+
+    } else
+
+      if (message.content === (adminprefix + "leave")) {
+        message.guild.leave();
+
+    } else
+
+      if (message.content.startsWith(adminprefix + 'wt')) {
+        client.user.setActivity(argresult, {type:'WATCHING'});
+        message.channel.send(`**Ok, watching..** **${argresult}!**`).then(message =>{message.delete(11000)});
+
+    } else
+
+     if (message.content.startsWith(adminprefix + 'ls')) {
+        client.user.setActivity(argresult , {type:'LISTENING'});
+        message.channel.send(`**Ok, listening to..** **${argresult}!**`).then(message =>{message.delete(11000)});
+    } else
+
+     if (message.content.startsWith(adminprefix + 'st')) {
+        client.user.setGame(argresult, "https://www.twitch.tv/idk");
+        message.channel.send(`**Ok, Streaming..** **${argresult}!**`).then(message =>{message.delete(11000)});
+    }
+
+     if (message.content.startsWith(adminprefix + 's-name')) {
+        client.user.setUsername(argresult).then
+        message.channel.send(`**Changing my name to..** **${argresult}!** `).then(message =>{message.delete(11000)});
+
+    } else
+
+     if (message.content.startsWith(adminprefix + 's-avatar')) {
+        client.user.setAvatar(argresult);
+        message.channel.send(`**Changing my avatar to..** ${argresult}`).then(message =>{message.delete(11000)});
+
+    } else
+
+    if (message.content.startsWith(adminprefix + 's-status')) {
+        client.user.setStatus(argresult)
+        message.channel.send(`**Ok, status changed to..** **${argresult}!**`).then(message =>{message.delete(11000)});
+    }
+
+});
+
 /*
 ////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\
 ////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\
