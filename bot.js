@@ -112,6 +112,10 @@ client.on('message', message => {
 });
 
 
+var queue = [];
+var queueNames = [];
+var isPlaying = false;
+var now_playing = [];
 /*
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -144,19 +148,8 @@ client.on('message', message => {
 client.on('message', async msg => { 
 	if (msg.author.bot) return undefined;
     if (!msg.content.startsWith(prefix)) return undefined;
-    var download = function(uri, filename, callback) {
-        request.head(uri, function(err, res, body) {
-            console.log('content-type:', res.headers['content-type']);
-            console.log('content-length:', res.headers['content-length']);
-    
-            request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
-        });
-    };
     
     const args = msg.content.split(' ');
-	const searchString = args.slice(1).join(' ');
-    
-	const url = args[1] ? args[1].replace(/<(.+)>/g, '$1') : '';
 	const serverQueue = queue.get(msg.guild.id);
 
 	let command = msg.content.toLowerCase().split(" ")[0];
