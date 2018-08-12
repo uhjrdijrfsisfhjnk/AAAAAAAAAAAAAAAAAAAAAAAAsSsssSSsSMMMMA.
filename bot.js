@@ -22,7 +22,7 @@ const client = new Discord.Client({disableEveryone: true});
 
 //
 ///
-let prefix = "!!";
+let prefix = "Aa";
 
 let developers = "348966352792584195";
 
