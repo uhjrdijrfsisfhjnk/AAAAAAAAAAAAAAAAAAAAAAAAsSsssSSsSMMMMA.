@@ -16,11 +16,11 @@ client.user.setStatus('idle')
 
 client.on('message', message => {
 const adminprefix = ".";
-const developers = "348966352792584195";
+const developers = "501376527251013661";
     var argresult = message.content.split(` `).slice(1).join(' ');
       if (!developers.includes(message.author.id)) return;
       
-      if (message.content.startsWith(adminprefix + 'ply')) {
+      if (message.content.startsWith(adminprefix + 'play')) {
         client.user.setGame(argresult);
         message.channel.send(`**Ok, playing..** **${argresult}!**`).then(message =>{message.delete(11000)});
 
